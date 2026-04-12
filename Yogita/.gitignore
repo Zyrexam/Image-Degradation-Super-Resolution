@@ -1,0 +1,20 @@
+# environments
+venv/
+
+# cache
+__pycache__/
+*.pyc
+
+# datasets
+Flickr2K/
+*.zip
+
+# models
+*.pth
+*.pt
+*.ckpt
+
+# images (optional but recommended)
+*.png
+*.jpg
+*.jpeg
