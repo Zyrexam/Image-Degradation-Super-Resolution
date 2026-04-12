@@ -1,0 +1,2 @@
+download dataset --->>  kaggle datasets download -d daehoyang/flickr2k -p . --unzip (10 gb)
+                        kaggle datasets download -d soumikrakshit/div2k-high-resolution-images -p . --unzip (4gb)
