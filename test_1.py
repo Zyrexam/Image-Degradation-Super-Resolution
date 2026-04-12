@@ -10,8 +10,8 @@ from model import DegradationAwareSR
 # ==============================================================================
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-CHECKPOINT_PATH = "checkpoints_cpu/model_final.pth"  # Update this path
-TEST_IMAGE_PATH = "test.png"  # Put your test image here
+CHECKPOINT_PATH = "checkpoints_cpu/model_best.pth"  # Update this path
+TEST_IMAGE_PATH = "test2.jpg"  # Put your test image here
 OUTPUT_DIR = "test_results"
 SCALE = 4
 

@@ -136,71 +136,71 @@ print("="*70)
 # PHASE A: Quick validation (10 epochs, 500 images)
 # ==============================================================================
 
-# print("\n" + "="*70)
-# print("PHASE A: Quick Validation (10 epochs)")
-# print("="*70)
+print("\n" + "="*70)
+print("PHASE A: Quick Validation (10 epochs)")
+print("="*70)
 
-# train_dataset_phaseA = SRDataset(
-#     TRAIN_HR_DIR,
-#     scale=4,
-#     degrade=True,
-#     crop_size=CROP_SIZE,
-#     return_lr_pair=True,
-# )
+train_dataset_phaseA = SRDataset(
+    TRAIN_HR_DIR,
+    scale=4,
+    degrade=True,
+    crop_size=CROP_SIZE,
+    return_lr_pair=True,
+)
 
-# if len(train_dataset_phaseA) > MAX_TRAIN_IMAGES_PHASE_A:
-#     g = torch.Generator().manual_seed(42)
-#     indices = torch.randperm(len(train_dataset_phaseA), generator=g)[:MAX_TRAIN_IMAGES_PHASE_A].tolist()
-#     train_dataset_phaseA = Subset(train_dataset_phaseA, indices)
-#     print(f"Phase A using {len(train_dataset_phaseA)} images")
+if len(train_dataset_phaseA) > MAX_TRAIN_IMAGES_PHASE_A:
+    g = torch.Generator().manual_seed(42)
+    indices = torch.randperm(len(train_dataset_phaseA), generator=g)[:MAX_TRAIN_IMAGES_PHASE_A].tolist()
+    train_dataset_phaseA = Subset(train_dataset_phaseA, indices)
+    print(f"Phase A using {len(train_dataset_phaseA)} images")
 
-# train_loader_phaseA = DataLoader(
-#     train_dataset_phaseA,
-#     batch_size=BATCH_SIZE,
-#     shuffle=True,
-#     num_workers=NUM_WORKERS,
-#     pin_memory=PIN_MEMORY,
-# )
+train_loader_phaseA = DataLoader(
+    train_dataset_phaseA,
+    batch_size=BATCH_SIZE,
+    shuffle=True,
+    num_workers=NUM_WORKERS,
+    pin_memory=PIN_MEMORY,
+)
 
-# # Initialize model
-# model = DegradationAwareSR(scale=4, d_channels=8, feat_channels=64).to(DEVICE)
-# total_params = sum(p.numel() for p in model.parameters())
-# print(f"Model parameters: {total_params:,}")
+# Initialize model
+model = DegradationAwareSR(scale=4, d_channels=8, feat_channels=64).to(DEVICE)
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Model parameters: {total_params:,}")
 
-# optimizer = torch.optim.Adam(model.parameters(), lr=LR_INITIAL)
-# scheduler = get_scheduler(optimizer, EPOCHS_PHASE_A + EPOCHS_PHASE_B)
-# criterion = nn.L1Loss()
+optimizer = torch.optim.Adam(model.parameters(), lr=LR_INITIAL)
+scheduler = get_scheduler(optimizer, EPOCHS_PHASE_A + EPOCHS_PHASE_B)
+criterion = nn.L1Loss()
 
-# history_phaseA = {"epoch": [], "loss": [], "loss_sr": [], "loss_consist": []}
+history_phaseA = {"epoch": [], "loss": [], "loss_sr": [], "loss_consist": []}
 
-# for epoch in range(EPOCHS_PHASE_A):
-#     loss, loss_sr, loss_cs = train_one_epoch(
-#         model, train_loader_phaseA, optimizer, criterion, 
-#         epoch, EPOCHS_PHASE_A, "Phase A"
-#     )
+for epoch in range(EPOCHS_PHASE_A):
+    loss, loss_sr, loss_cs = train_one_epoch(
+        model, train_loader_phaseA, optimizer, criterion, 
+        epoch, EPOCHS_PHASE_A, "Phase A"
+    )
     
-#     history_phaseA["epoch"].append(epoch + 1)
-#     history_phaseA["loss"].append(loss)
-#     history_phaseA["loss_sr"].append(loss_sr)
-#     history_phaseA["loss_consist"].append(loss_cs)
+    history_phaseA["epoch"].append(epoch + 1)
+    history_phaseA["loss"].append(loss)
+    history_phaseA["loss_sr"].append(loss_sr)
+    history_phaseA["loss_consist"].append(loss_cs)
     
-#     print(f"\nPhase A Epoch {epoch+1}/{EPOCHS_PHASE_A}:")
-#     print(f"  Loss:      {loss:.6f}")
-#     print(f"  SR Loss:   {loss_sr:.6f}")
-#     print(f"  Cons Loss: {loss_cs:.6f}")
-#     print(f"  LR:        {optimizer.param_groups[0]['lr']:.2e}\n")
+    print(f"\nPhase A Epoch {epoch+1}/{EPOCHS_PHASE_A}:")
+    print(f"  Loss:      {loss:.6f}")
+    print(f"  SR Loss:   {loss_sr:.6f}")
+    print(f"  Cons Loss: {loss_cs:.6f}")
+    print(f"  LR:        {optimizer.param_groups[0]['lr']:.2e}\n")
     
-#     scheduler.step()
+    scheduler.step()
     
-#     # Save checkpoint every 2 epochs
-#     if (epoch + 1) % 2 == 0:
-#         torch.save(model.state_dict(), os.path.join(SAVE_PATH, f"phase_a_epoch_{epoch+1}.pth"))
+    # Save checkpoint every 2 epochs
+    if (epoch + 1) % 2 == 0:
+        torch.save(model.state_dict(), os.path.join(SAVE_PATH, f"phase_a_epoch_{epoch+1}.pth"))
     
-#     gc.collect()  # Force garbage collection
+    gc.collect()  # Force garbage collection
 
-# # Save Phase A checkpoint
-# torch.save(model.state_dict(), os.path.join(SAVE_PATH, "phase_a_complete.pth"))
-# print(f"✅ Phase A complete! Saved to {SAVE_PATH}/phase_a_complete.pth")
+# Save Phase A checkpoint
+torch.save(model.state_dict(), os.path.join(SAVE_PATH, "phase_a_complete.pth"))
+print(f" Phase A complete! Saved to {SAVE_PATH}/phase_a_complete.pth")
 
 
 
@@ -242,14 +242,14 @@ history_phaseB = {"epoch": [], "loss": [], "loss_sr": [], "loss_consist": []}
 best_loss = float('inf')
 best_epoch = 0
 
-# Initialize model
-model = DegradationAwareSR(scale=4, d_channels=8, feat_channels=64).to(DEVICE)
-total_params = sum(p.numel() for p in model.parameters())
-print(f"Model parameters: {total_params:,}")
+# # Initialize model
+# model = DegradationAwareSR(scale=4, d_channels=8, feat_channels=64).to(DEVICE)
+# total_params = sum(p.numel() for p in model.parameters())
+# print(f"Model parameters: {total_params:,}")
 
-optimizer = torch.optim.Adam(model.parameters(), lr=LR_INITIAL)
-scheduler = get_scheduler(optimizer, EPOCHS_PHASE_A + EPOCHS_PHASE_B)
-criterion = nn.L1Loss()
+# optimizer = torch.optim.Adam(model.parameters(), lr=LR_INITIAL)
+# scheduler = get_scheduler(optimizer, EPOCHS_PHASE_A + EPOCHS_PHASE_B)
+# criterion = nn.L1Loss()
 
 for epoch in range(EPOCHS_PHASE_B):
     current_epoch = EPOCHS_PHASE_A + epoch + 1
@@ -311,7 +311,7 @@ with open(os.path.join(SAVE_PATH, "training_history.json"), "w") as f:
     json.dump(history, f, indent=2)
 
 print("\n" + "="*70)
-print("✅ TRAINING COMPLETE")
+print("TRAINING COMPLETE")
 print("="*70)
 print(f"Best epoch:       {best_epoch}")
 print(f"Best loss:        {best_loss:.6f}")
